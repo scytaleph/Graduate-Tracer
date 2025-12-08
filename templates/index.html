@@ -643,8 +643,10 @@
 </script>
 END OF SCRIPT-->
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+
+<script>
         // ==========================================
         // 1. CHECK FOR EDIT MODE ON PAGE LOAD
         // ==========================================
@@ -683,7 +685,6 @@ END OF SCRIPT-->
                         const select = document.getElementById(selectId);
                         const input = document.getElementById(inputId);
                         
-                        // Check if value matches one of the dropdown options
                         let isStandard = Array.from(select.options).some(opt => opt.value === value);
 
                         if (isStandard) {
@@ -692,10 +693,8 @@ END OF SCRIPT-->
                             input.removeAttribute("required");
                             input.value = "";
                         } else {
-                            // If not standard, it must be "Other"
-                            select.value = "Others"; 
-                            // If "Others" isn't in your list, try "Other"
-                            if (select.value === "") select.value = "Other"; 
+                            select.value = "Other"; 
+                            if (select.value === "") select.value = "Others"; // Fallback
 
                             input.value = value; 
                             input.classList.remove('d-none');
@@ -703,7 +702,6 @@ END OF SCRIPT-->
                         }
                     };
 
-                    // Apply helper to your specific IDs
                     setDropdown("gender", "other", data.personal_info.gender);
                     setDropdown("HEA", "otherH", data.personal_info.HEA);
                     setDropdown("eligibility", "otherE", data.personal_info.eligibility);
@@ -716,8 +714,6 @@ END OF SCRIPT-->
                     // --- EMPLOYMENT DATA ---
                     const empStatus = document.getElementById("emp_status");
                     empStatus.value = data.employment_data.status;
-                    
-                    // Manually trigger the toggle function to show/hide job fields
                     toggleJobFields(); 
 
                     if (data.employment_data.job_details) {
@@ -729,7 +725,6 @@ END OF SCRIPT-->
                             document.getElementById("related_course").checked = true;
                         }
 
-                        // Handle Organization "Other" logic
                         setDropdown("organization", "otherO", data.employment_data.job_details.organization_type);
                     }
 
@@ -739,7 +734,6 @@ END OF SCRIPT-->
                     }
 
                     // --- PREPARE UI FOR UPDATE ---
-                    // Create a hidden input to store the ID
                     let hiddenId = document.getElementById("edit_id_field");
                     if (!hiddenId) {
                         hiddenId = document.createElement("input");
@@ -749,8 +743,7 @@ END OF SCRIPT-->
                     }
                     hiddenId.value = id;
 
-                    // Change Button Text
-                    const btn = document.querySelector("button[type='submit']");
+                    const btn = document.querySelector("#submitBtn"); // Target ID specifically
                     if (btn) {
                         btn.innerText = "Update Data";
                         btn.classList.remove("btn-primary");
@@ -761,17 +754,16 @@ END OF SCRIPT-->
         }
 
         // ==========================================
-        // 3. TOGGLE FUNCTIONS (Your Original Logic)
+        // 3. TOGGLE FUNCTIONS
         // ==========================================
         function toggleJobFields() {
             const status = document.getElementById("emp_status").value;
             const jobSection = document.getElementById("job-details-section");
-            
             const jobTitle = document.getElementById("job_title");
             const company = document.getElementById("company");
             const income = document.getElementById("income");
 
-            if (status === "Regular/ Permanent" || status === "Temporary" || status === "Casual/ Contractual" || status === "Contract of Service/ Job Order" || status === "Self-Employed") {
+            if (["Regular/ Permanent", "Temporary", "Casual/ Contractual", "Contract of Service/ Job Order", "Self-Employed"].includes(status)) {
                 jobSection.classList.remove("d-none");
                 jobTitle.required = true;
                 company.required = true;
@@ -787,7 +779,6 @@ END OF SCRIPT-->
         function toggleOtherGender() {
             const selectBox = document.getElementById("gender");
             const otherInput = document.getElementById("other");
-
             if (selectBox.value === "Other") {
                 otherInput.classList.remove("d-none");
                 otherInput.setAttribute("required", "true");
@@ -802,7 +793,6 @@ END OF SCRIPT-->
         function toggleOtherHEA() {
             const selectBox = document.getElementById("HEA");
             const otherHEA = document.getElementById("otherH");
-
             if (selectBox.value === "Others") {
                 otherHEA.classList.remove("d-none");
                 otherHEA.setAttribute("required", "true");
@@ -817,7 +807,6 @@ END OF SCRIPT-->
         function toggleOrganization() {
             const selectBox = document.getElementById("organization");
             const otherO = document.getElementById("otherO");
-
             if (selectBox.value === "Others") {
                 otherO.classList.remove("d-none");
                 otherO.setAttribute("required", "true");
@@ -832,7 +821,6 @@ END OF SCRIPT-->
         function toggleEligibility() {
             const selectBox = document.getElementById("eligibility");
             const otherE = document.getElementById("otherE");
-
             if (selectBox.value === "Others") {
                 otherE.classList.remove("d-none");
                 otherE.setAttribute("required", "true");
@@ -845,31 +833,23 @@ END OF SCRIPT-->
         }
 
         // ==========================================
-        // 4. FORM VALIDATION LISTENER
+        // 4. MAIN SUBMIT FUNCTION (Validation + Submission)
         // ==========================================
-        const form = document.getElementById('alumniForm');
+        async function submitData() {
+            const form = document.getElementById('alumniForm'); 
 
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            if (form.checkValidity()) {
-                submitData(); // Run our main function
-            } else {
+            // --- STEP 1: VALIDATION CHECK ---
+            if (!form.checkValidity()) {
                 form.classList.add('was-validated');
                 Swal.fire({
                     icon: 'warning',
                     title: 'Missing Fields',
                     text: 'Please fill out all required fields marked in red.',
                 });
+                return; // STOP! Do not proceed.
             }
-        }, false);
 
-        // ==========================================
-        // 5. MAIN SUBMIT FUNCTION (Add & Update)
-        // ==========================================
-        async function submitData() {
-            // Gather Basic Values
+            // --- STEP 2: GATHER VARIABLES ---
             const student_id = document.getElementById("student_id").value.trim();
             const first_name = document.getElementById("first_name").value.trim();
             const last_name = document.getElementById("last_name").value.trim();
@@ -881,7 +861,6 @@ END OF SCRIPT-->
             const year_grad = document.getElementById("year_grad").value.trim();
             const emp_status = document.getElementById("emp_status").value;
             
-            // --- HELPER: Get Final Value (Dropdown vs Textbox) ---
             const getFinalValue = (dropId, inputId) => {
                 const drop = document.getElementById(dropId);
                 const inp = document.getElementById(inputId);
@@ -899,7 +878,6 @@ END OF SCRIPT-->
             const skillsInput = document.getElementById("skills").value.trim();
             const skillsFinal = skillsInput === "" ? [] : skillsInput.split(',').map(s => s.trim());
 
-            // --- CONSTRUCT JSON ---
             const alumniData = {
                 "student_id": student_id,
                 "personal_info": { 
@@ -921,11 +899,9 @@ END OF SCRIPT-->
                 "skills": skillsFinal
             };
 
-            // --- DECIDE: ADD OR UPDATE? ---
             const editIdField = document.getElementById("edit_id_field");
             const isEdit = editIdField && editIdField.value !== "";
 
-            // Set URL and Method
             let url = isEdit ? `/update_alumni/${editIdField.value}` : '/add_alumni';
             
             try {
@@ -945,17 +921,12 @@ END OF SCRIPT-->
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        // If we are editing, go back to the list
                         if (isEdit) {
-                            window.location.href = "/admin-dashboard"; // Redirect to dashboard
+                            window.location.href = "/admin-dashboard"; 
                         } else {
-                            // If adding, just reset the form
                             document.querySelector("form").reset();
                             form.classList.remove('was-validated');
                             document.getElementById("job-details-section").classList.add("d-none");
-                            
-                            // If you have a table on this page, reload it
-                            if(typeof loadAlumni === "function") { loadAlumni(); }
                         }
                     });
                 } else {
@@ -966,8 +937,6 @@ END OF SCRIPT-->
                 Swal.fire('Error', 'Something went wrong', 'error');
             }
         }
-    </script>
-    </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</script>
 </body>
 </html>
