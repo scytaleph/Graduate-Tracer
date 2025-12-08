@@ -112,7 +112,7 @@
         <div class="table-section">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h2>📋 <b>Graduate Tracer Data List</b>
-                    <span class="badge bg-primary fs-5 align-middle" id="totalCount">0</span>
+                    <!-- <span class="badge bg-primary fs-5 align-middle" id="totalCount">0</span> -->
                 </h2>
                 <div class="d-flex align-items-center gap-3">
                     <h4>
@@ -145,6 +145,12 @@
                     </tbody>
             </table>
         </div>
+            <div class="mt-3 pt-3 border-top d-flex justify-content-start align-items-center">
+                <h4 class="text-secondary mb-0">
+                    Total Records: 
+                    <span class="badge bg-primary fs-5 ms-1" id="totalCount">0</span>
+                </h4>
+            </div>
     </div>
 
     <script>
@@ -161,7 +167,7 @@
                 // Clear the loading text
                 tableBody.innerHTML = "";
 
-                countSpan.textContent = `Total: ${data.length}`;
+                countSpan.textContent = `${data.length}`;
 
                 // Check if database is empty
                 if (data.length === 0) {
