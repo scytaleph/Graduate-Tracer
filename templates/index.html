@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BISCAST Alumni Tracking (Tracer)</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { 
+            background-color: #f4f4f9; 
+            padding: 20px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* UPDATED: Centered Single-Column Layout */
+        .main-wrapper {
+            display: flex;
+            flex-direction: column; /* Stacks items vertically */
+            align-items: center;    /* Centers items horizontally */
+            gap: 30px;              /* Adds space between Form and Table */
+            max-width: 1000px;      /* Limits the total width */
+            margin: 0 auto;         /* Centers the whole wrapper on the page */
+        }
+
+        .container-box { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            width: 100%;            /* Fills the wrapper width */
+        }
+
+        /* Make the form slightly narrower than the table for better aesthetics */
+        .form-section { 
+            max-width: 700px; 
+        } 
+        
+        .table-section { 
+            width: 100%; 
+            overflow-x: auto; 
+        }
+
+        /* Green left border for the hidden job section */
+        #job-details-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-left: 5px solid #198754; /* Bootstrap green */
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        /* Header Styling */
+        h1 { margin-bottom: 20px; color: #333; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<h1 class="text-center text-dark mb-4">🎓 BISCAST Alumni & Tracer System</h1>
+
+
+<div class="main-wrapper">
+<div class="container-box form-section">
+        <h4 class="mb-3" style="color: #800000;">📝 Alumni Tracer Profile</h4>
+        
+        <form id="alumniForm" class="needs-validation" novalidate>
+            
+            <div class="mb-2">
+                <label class="form-label fw-bold">Student ID <span class="text-danger">*</span></label>
+                <input type="text" id="student_id" class="form-control" placeholder="e.g. 2021-10452" oninput="this.value = this.value.replace(/[^0-9-]/g, '')" required>
+                <div class="invalid-feedback">ID is required.</div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label fw-bold">First Name <span class="text-danger">*</span></label>
+                    <input type="text" id="first_name" class="form-control" required>
+                    <div class="invalid-feedback">Required.</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label fw-bold">Last Name <span class="text-danger">*</span></label>
+                    <input type="text" id="last_name" class="form-control" required>
+                    <div class="invalid-feedback">Required.</div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-bold">Course Taken: <span class="text-danger">*</span></label>
+                        <select id="program" name = "program" class="form-select" required>
+                            <option value="" disabled selected>-- Select an Option --</option>
+                            <option value="Bachelor in Drafting Technology">Bachelor in Drafting Technology</option>
+                            <option value="Bachelor of Elementary Education">Bachelor of Elementary Education</option>
+                            <option value="Bachelor of Engineering Technology in Electrical Engineering Technology">Bachelor of Engineering Technology in Electrical Engineering Technology</option>
+                            <option value="Bachelor of Engineering Technology Major in Construction Engineering Technology">Bachelor of Engineering Technology Major in Construction Engineering Technology</option>
+                            <option value="Bachelor of Engineering Technology Major in Electronics Engineering Technology">Bachelor of Engineering Technology Major in Electronics Engineering Technology</option>
+                            <option value="Bachelor of Engineering Technology Major in Mechanical Automotive Technology Engineering">Bachelor of Engineering Technology Major in Mechanical Automotive Technology Engineering</option>
+                            <option value="Bachelor of Engineering Technology Major in Mechanical Engineering Technology">Bachelor of Engineering Technology Major in Mechanical Engineering Technology</option>
+                            <option value="Bachelor of Industrial Technology Major in Apparel and Fashion Technology">Bachelor of Industrial Technology Major in Apparel and Fashion Technology</option>
+                            <option value="Bachelor of Industrial Technology Major in Architectural Drafting Technology">Bachelor of Industrial Technology Major in Architectural Drafting Technology</option>
+                            <option value="Bachelor of Industrial Technology Major in Culinary Technology">Bachelor of Industrial Technology Major in Culinary Technology</option>
+                            <option value="Bachelor of Science in Architecture">Bachelor of Science in Architecture</option>
+                            <option value="Bachelor of Science in Civil Engineering">Bachelor of Science in Civil Engineering</option>
+                            <option value="Bachelor of Science in Electrical Engineering">Bachelor of Science in Electrical Engineering</option>
+                            <option value="Bachelor of Science in Electronics Engineering">Bachelor of Science in Electronics Engineering</option>
+                            <option value="Bachelor of Science In Entertainment And Multimedia Computing Major in Digital Animation Technology">Bachelor of Science In Entertainment And Multimedia Computing Major in Digital Animation Technology</option>
+                            <option value="Bachelor of Science In Entertainment And Multimedia Computing Major in Game Development">Bachelor of Science In Entertainment And Multimedia Computing Major in Game Development</option>
+                            <option value="Bachelor of Science in Entrepreneurship Specializing in Food Management">Bachelor of Science in Entrepreneurship Specializing in Food Management</option>
+                            <option value="Bachelor of Science in Entrepreneurship Specializing in Garments and Fashion Technology">Bachelor of Science in Entrepreneurship Specializing in Garments and Fashion Technology</option>
+                            <option value="Bachelor of Science in Entrepreneurship Specializing in Manufacturing and Service Technology">Bachelor of Science in Entrepreneurship Specializing in Manufacturing and Service Technology</option>
+                            <option value="Bachelor of Science in Exercise And Sports Sciences Major in Fitness And Sports Coaching">Bachelor of Science in Exercise And Sports Sciences Major in Fitness And Sports Coaching</option>
+                            <option value="Bachelor of Science in Exercise And Sports Sciences Major in Fitness And Sports Management">Bachelor of Science in Exercise And Sports Sciences Major in Fitness And Sports Management</option>
+                            <option value="Bachelor of Science in Food Technology">Bachelor of Science in Food Technology</option>
+                            <option value="Bachelor of Science in Industrial Technology Major in Food Trades">Bachelor of Science in Industrial Technology Major in Food Trades</option>
+                            <option value="Bachelor of Science in Industrial Technology Major in Garments Technology">Bachelor of Science in Industrial Technology Major in Garments Technology</option>
+                            <option value="Bachelor of Science in Mechanical Engineering">Bachelor of Science in Mechanical Engineering</option>
+                            <option value="Bachelor of Secondary Education Major in English">Bachelor of Secondary Education Major in English</option>
+                            <option value="Bachelor of Secondary Education Major in Mathematics">Bachelor of Secondary Education Major in Mathematics</option>
+                            <option value="Bachelor of Secondary Education Major in Science">Bachelor of Secondary Education Major in Science</option>
+                            <option value="Bachelor of Secondary Education major in Technology and Livelihood Education">Bachelor of Secondary Education major in Technology and Livelihood Education</option>
+                            <option value="Bachelor of Technical-Vocational Education Major in Food & Service Management">Bachelor of Technical-Vocational Education Major in Food & Service Management</option>
+                            <option value="Bachelor of Technical-Vocational Teacher Education Major in Garments Fashion and Design Technology">Bachelor of Technical-Vocational Teacher Education Major in Garments Fashion and Design Technology</option>
+                            <option value="Bachelor of Technology and Livelihood Education Major in Home Economics">Bachelor of Technology and Livelihood Education Major in Home Economics</option>
+                            <option value="Doctor of Education in Science Education">Doctor of Education in Science Education</option>
+                            <option value="Doctor of Philosophy in Mathematics Education">Doctor of Philosophy in Mathematics Education</option>
+                            <option value="Junior High School STEAM">Junior High School STEAM</option>
+                            <option value="Master of Arts in Education Major in Mathematics">Master of Arts in Education Major in Mathematics</option>
+                            <option value="Master of Arts in Education major in English Language Teaching">Master of Arts in Education major in English Language Teaching</option>
+                            <option value="Master of Arts in Education Major in Science">Master of Arts in Education Major in Science</option>
+                            <option value="Master of Arts in Teaching major in Technology and Livelihood Education with specialization in Home Economics">Master of Arts in Teaching major in Technology and Livelihood Education with specialization in Home Economics</option>
+                            <option value="Master of Arts in Teaching major in Technology Education">Master of Arts in Teaching major in Technology Education</option>
+                            <option value="Master of Engineering">Master of Engineering</option>
+                        </select>
+                    <div class="invalid-feedback">Please select your Course Taken.</div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-bold">Gender <span class="text-danger">*</span></label>
+                    <select id="gender" name = "gender" class="form-select" onchange="toggleOtherGender()" required>
+                        <option value="" disabled selected>-- Select Gender --</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="invalid-feedback">Please select a Gender.</div>
+                    <input type="text" id="other" class="form-control mt-2 d-none" placeholder="Please specify other gender">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-bold">Civil Status <span class="text-danger">*</span></label>
+                    <select id="civilstatus" class="form-select" required>
+                        <option value="" disabled selected>-- Select Civil Status --</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Separated">Separated</option>
+                        <option value="Widowed">Widowed</option>
+                        <option value="Single Parent">Single Parent</option>
+                    </select>
+                    <div class="invalid-feedback">Please select a Civil Status.</div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-bold">Highest Educational Attainment (for those who pursued advance studies) <span class="text-danger">*</span></label>
+                    <select id="HEA" name="HEA" class="form-select" onchange="toggleOtherHEA()" required>
+                        <option value="" disabled selected>-- Select Highest Educational Attainment --</option>
+                        <option value="With units in Master's Program">with units in Master's Program</option>
+                        <option value="Master's Degree Holder">Master's Degree Holder</option>
+                        <option value="With units in Doctorate Program">With units in Doctorate Program</option>
+                        <option value="Doctorate Degree Holder">Doctorate Degree Holder</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <div class="invalid-feedback">Please select a Highest Educational Attainment.</div>
+                    <input type="text" id="otherH" class="form-control mt-2 d-none" placeholder="Please specify other Highest Educational Attainment">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-bold"> Eligibility (Put N/A if none)<span class="text-danger">*</span></label>
+                    <select id="eligibility" name="eligibility" class="form-select" onchange="toggleEligibility()" required>
+                        <option value="" disabled selected>-- Select Eligibility --</option>
+                        <option value="CS Sub-Professional">CS Sub-Professional</option>
+                        <option value="CS Professional">CS Professional</option>
+                        <option value="PRC License">PRC License</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <div class="invalid-feedback">Please select an Eligibility.</div>
+                    <input type="text" id="otherE" class="form-control mt-2 d-none" placeholder="Please specify other Eligibility">
+                </div>
+
+            </div>
+
+            <h4 class="mt-3 text-secondary border-bottom pb-1">📞 Contact Info</h4>
+            <div class="mb-2">
+                <label class="form-label fw-bold">Email Address <span class="text-danger">*</span></label>
+                <input type="email" id="email" class="form-control" placeholder="student@gmail.com" required>
+                <div class="invalid-feedback">Please provide a valid email.</div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label fw-bold">Mobile No. <span class="text-danger">*</span></label>
+                    <input type="text" id="mobile" maxlength="11" class="form-control" placeholder="09xxxxxxxxx" oninput="this.value = this.value.replace(/[^0-9-]/g, '')" required>
+                    <div class="invalid-feedback">Mobile No. is required.</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label fw-bold">Current City <span class="text-danger">*</span></label>
+                    <input type="text" id="city" class="form-control" placeholder="e.g. Naga City" required>
+                    <div class="invalid-feedback">City is required.</div>
+                </div>
+            </div>
+
+                <h4 class="mt-3 text-secondary border-bottom pb-1">💼 Employment Data</h4>
+                <div class="mb-2">
+                    <label class="form-label fw-bold">Current Status <span class="text-danger">*</span></label>
+                    <select id="emp_status" class="form-select" onchange="toggleJobFields()" required>
+                        <option value="" disabled selected>-- Select Status --</option>
+                        <option value="Unemployed">Unemployed</option>
+                        <!--<option value="Employed">Employed</option>-->
+                        <option value="Regular/ Permanent">Regular/ Permanent</option>
+                        <option value="Temporary">Temporary</option>
+                        <option value="Casual/ Contractual">Casual/ Contractual</option>
+                        <option value="Contract of Service/ Job Order">Contract of Service/ Job Order</option>
+                        <option value="Self-Employed">Self-Employed</option>
+                        <!--<option value="Further Studies">Pursuing Further Studies</option>-->
+                    </select>
+                    <div class="invalid-feedback">Please select your status.</div>
+                </div>
+
+                <div id="job-details-section" class="d-none">
+                    <div class="mb-2">
+                        <label class="form-label">Job Title <span class="text-danger">*</span></label>
+                        <input type="text" id="job_title" class="form-control" placeholder="e.g. Web Developer">
+                        <div class="invalid-feedback">Please provide your Job Title.</div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Company Name <span class="text-danger">*</span></label>
+                        <input type="text" id="company" class="form-control">
+                        <div class="invalid-feedback">Company Name is required.</div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Type of Organization <span class="text-danger">*</span></label>
+                        <select id="organization" class="form-select" onchange="toggleOrganization()" required>
+                            <option value="" disabled selected>-- Select Organization --</option>
+                            <option value="Private">Private</option>
+                            <option value="Government">Government</option>
+                            <option value="NGO">NGO</option>
+                            <option value="Others">Others</option>
+                        </select>
+                        <div class="invalid-feedback">Please select an organization.</div>
+                        <input type="text" id="otherO" class="form-control mt-2 d-none" placeholder="Please specify other Organization">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Monthly Income Range <span class="text-danger">*</span></label>
+                        <select id="income" class="form-select">
+                            <option value="" disabled selected>-- Select Range --</option>
+                            <option value="Below 10,000">Below 10,000</option>
+                            <option value="10,000 - 20,000">10,000 - 20,000</option>
+                            <option value="20,000 - 30,000">20,000 - 30,000</option>
+                            <option value="30,000 - 50,000">30,000 - 50,000</option>
+                            <option value="Above 50,000">Above 50,000</option>
+                        </select>
+                        <div class="invalid-feedback">Please select an income range.</div>
+                    </div>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="related_course">
+                        <label class="form-check-label" for="related_course">
+                            Is this job related to your course?
+                        </label>
+                    </div>
+                </div>
+                    <h4 class="mt-3 text-secondary border-bottom pb-1">🛠 Skills & Year</h4>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Year Graduated <span class="text-danger">*</span></label>
+                        <input type="text" id="year_grad" maxlength="4" class="form-control" placeholder="e.g. 2021" oninput="this.value = this.value.replace(/[^0-9-]/g, '')" required>
+                        <div class="invalid-feedback">Year Graduated is required.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Skills (Comma separated)</label>
+                        <input type="text" id="skills" class="form-control" placeholder="Python, CAD, Networking">
+                    </div>     
+            <button type="submit" class="btn btn-success w-100 fw-bold">Submit Profile</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // START EDIT/UPDATE PART
+        // 1. CHECK FOR EDIT MODE ON PAGE LOAD
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit_id');
+
+            if (editId) {
+                console.log("Edit Mode Detected for ID:", editId);
+                loadAlumniDataForEdit(editId);
+            }
+        });
+
+    // --- UPDATED JAVASCRIPT FOR BOOTSTRAP VALIDATION ---
+    // 1. Dynamic Fields Logic (Kept mostly the same)
+    function toggleJobFields() {
+        const status = document.getElementById("emp_status").value;
+        const jobSection = document.getElementById("job-details-section");
+        
+        const jobTitle = document.getElementById("job_title");
+        const company = document.getElementById("company");
+        const income = document.getElementById("income");
+
+        if (status === "Regular/ Permanent" || status === "Temporary" || status === "Casual/ Contractual" || status === "Contract of Service/ Job Order" || status === "Self-Employed") {
+            jobSection.classList.remove("d-none");
+            // Set required TRUE so Bootstrap validates them
+            jobTitle.required = true;
+            company.required = true;
+            income.required = true;
+        } else {
+            jobSection.classList.add("d-none");
+            // Set required FALSE so Bootstrap ignores them
+            jobTitle.required = false;
+            company.required = false;
+            income.required = false;
+            
+            // Cleanup: remove error styles if they were previously red
+            jobTitle.classList.remove("is-invalid");
+            company.classList.remove("is-invalid");
+            income.classList.remove("is-invalid");
+        }
+    }
+
+    function toggleOtherGender() {
+        //var selectBox = document.getElementById("gender");
+        //var otherInput = document.getElementById("other");
+
+        const selectBox = document.getElementById("gender");
+        const otherInput = document.getElementById("other");
+
+
+        // Check if the selected value is 'Others'
+        if (selectBox.value === "Other") {
+            // Remove the 'd-none' class to show the textbox
+            otherInput.classList.remove("d-none");
+            // Make it required so they can't leave it blank
+            otherInput.setAttribute("required", "true");
+            // Focus on the textbox automatically
+            otherInput.focus();
+
+            selectBox.removeAttribute("name"); 
+            otherInput.setAttribute("name", "gender");
+
+        } else {
+            // Add the 'd-none' class back to hide the textbox
+            otherInput.classList.add("d-none");
+            // Remove requirement
+            otherInput.removeAttribute("required");
+            // Clear the text inside if they switch back to something else
+            otherInput.value = "";
+
+            selectBox.setAttribute("name", "gender"); 
+            otherInput.removeAttribute("name");
+
+        }
+    }
+
+        function toggleOtherHEA() {
+        //var selectBox = document.getElementById("HEA");
+        //var otherHEA = document.getElementById("otherH");
+
+        const selectBox = document.getElementById("HEA");
+        const otherHEA = document.getElementById("otherH");
+
+        // Check if the selected value is 'Others'
+        if (selectBox.value === "Others") {
+            // Remove the 'd-none' class to show the textbox
+            otherHEA.classList.remove("d-none");
+            // Make it required so they can't leave it blank
+            otherHEA.setAttribute("required", "true");
+            // Focus on the textbox automatically
+            otherHEA.focus();
+
+            selectBox.removeAttribute("name"); 
+            otherHEA.setAttribute("name", "HEA");
+
+        } else {
+            // Add the 'd-none' class back to hide the textbox
+            otherHEA.classList.add("d-none");
+            // Remove requirement
+            otherHEA.removeAttribute("required");
+            // Clear the text inside if they switch back to something else
+            otherHEA.value = "";
+
+            selectBox.setAttribute("name", "HEA"); 
+            otherHEA.removeAttribute("name");
+        }
+    }
+
+        function toggleOrganization() {
+        //var selectBox = document.getElementById("HEA");
+        //var otherHEA = document.getElementById("otherH");
+
+        const selectBox = document.getElementById("organization");
+        const otherO = document.getElementById("otherO");
+
+        // Check if the selected value is 'Others'
+        if (selectBox.value === "Others") {
+            // Remove the 'd-none' class to show the textbox
+            otherO.classList.remove("d-none");
+            // Make it required so they can't leave it blank
+            otherO.setAttribute("required", "true");
+            // Focus on the textbox automatically
+            otherO.focus();
+
+            selectBox.removeAttribute("name"); 
+            otherO.setAttribute("name", "organization");
+
+        } else {
+            // Add the 'd-none' class back to hide the textbox
+            otherO.classList.add("d-none");
+            // Remove requirement
+            otherO.removeAttribute("required");
+            // Clear the text inside if they switch back to something else
+            otherO.value = "";
+
+            selectBox.setAttribute("name", "organization"); 
+            otherO.removeAttribute("name");
+        }
+    }
+
+        function toggleEligibility() {
+        //var selectBox = document.getElementById("HEA");
+        //var otherHEA = document.getElementById("otherH");
+
+        const selectBox = document.getElementById("eligibility");
+        const otherE = document.getElementById("otherE");
+
+        // Check if the selected value is 'Others'
+        if (selectBox.value === "Others") {
+            // Remove the 'd-none' class to show the textbox
+            otherE.classList.remove("d-none");
+            // Make it required so they can't leave it blank
+            otherE.setAttribute("required", "true");
+            // Focus on the textbox automatically
+            otherE.focus();
+
+            selectBox.removeAttribute("name"); 
+            otherHEA.setAttribute("name", "eligibility");
+
+        } else {
+            // Add the 'd-none' class back to hide the textbox
+            otherE.classList.add("d-none");
+            // Remove requirement
+            otherE.removeAttribute("required");
+            // Clear the text inside if they switch back to something else
+            otherE.value = "";
+
+            selectBox.setAttribute("name", "eligibility"); 
+            otherE.removeAttribute("name");
+        }
+    }
+
+    // 2. Form Submission with Validation
+    const form = document.getElementById('alumniForm');
+
+    form.addEventListener('submit', function (event) {
+        // Prevent default submission
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Check if the form is valid using HTML5/Bootstrap logic
+        if (form.checkValidity()) {
+            // IF VALID: Run your data processing function
+            submitData();
+        } else {
+            // IF INVALID: Add class to show red borders
+            form.classList.add('was-validated');
+            // Show error alert
+            Swal.fire({
+                icon: 'warning',
+                title: 'Missing Fields',
+                text: 'Please fill out all required fields marked in red.',
+            });
+        }
+    }, false);
+
+    // 3. The Actual Data Submission (Separated for clarity)
+    async function submitData() {
+        // Get Values
+        const student_id = document.getElementById("student_id").value.trim();
+        const first_name = document.getElementById("first_name").value.trim();
+        const last_name = document.getElementById("last_name").value.trim();
+        const program = document.getElementById("program").value;
+        const gender = document.getElementById("gender").value;
+        const civilstatus = document.getElementById("civilstatus").value;
+        const HEA = document.getElementById("HEA").value;
+        const eligibility = document.getElementById("eligibility").value;
+        const email = document.getElementById("email").value.trim();
+        const mobile = document.getElementById("mobile").value.trim();
+        const city = document.getElementById("city").value.trim();
+        const emp_status = document.getElementById("emp_status").value;
+        const organization = document.getElementById("organization").value;
+        const year_grad = document.getElementById("year_grad").value.trim();
+        const skillsInput = document.getElementById("skills").value.trim();
+        let skillsFinal = skillsInput === "" ? [] : skillsInput.split(',').map(s => s.trim());
+
+        var genderDropdown = document.getElementById("gender");
+        var genderInput = document.getElementById("other");
+        var finalGender;
+
+        var headropdown = document.getElementById("HEA");
+        var heaInput = document.getElementById("otherH");
+        var finalHEA;
+
+        var eligdropdown = document.getElementById("eligibility");
+        var eligInput = document.getElementById("otherE");
+        var finaleligibility;
+
+        var orgdropdown = document.getElementById("organization");
+        var orgInput = document.getElementById("otherO");
+        var finalorganization;
+
+        if (genderDropdown.value === "Other") {
+            finalGender = genderInput.value.trim();
+        } else {
+            finalGender = genderDropdown.value;
+        }
+
+        if (headropdown.value === "Others") {
+            finalHEA = heaInput.value.trim();
+        } else {
+            finalHEA = headropdown.value;
+        }
+
+        if (eligdropdown.value === "Others") {
+            finaleligibility = eligInput.value.trim();
+        } else {
+            finaleligibility = eligdropdown.value;
+        }
+
+        if (orgdropdown.value === "Others") {
+            finalorganization = orgInput.value.trim();
+        } else {
+            finalorganization = orgdropdown.value;
+        }
+
+        var dataToSend ={
+            gender: finalGender,
+            eligibility: finaleligibility,
+            organization: finalorganization,
+            HEA: finalHEA
+        };
+
+        // Construct JSON
+        const alumniData = {
+            "student_id": student_id,
+            "personal_info": { "first_name": first_name, "last_name": last_name, "year_grad": year_grad, "program": program, "gender": finalGender, "civilstatus": civilstatus, "HEA": finalHEA, eligibility: finaleligibility },
+            "contact_info": { "email": email, "mobile": mobile, "city": city },
+            "employment_data": {
+                "status": emp_status,
+                "job_details": (emp_status === "Regular/ Permanent" || emp_status === "Temporary" || emp_status === "Casual/ Contractual" || emp_status === "Contract of Service/ Job Order" || emp_status === "Self-Employed") ? {
+                    "title": document.getElementById("job_title").value,
+                    "company": document.getElementById("company").value,
+                    "organization_type": finalorganization,
+                    "income_range": document.getElementById("income").value,
+                    "related_to_course": document.getElementById("related_course").checked
+                } : null
+            },
+            "skills": skillsFinal
+        };
+
+        try {
+            const response = await fetch('/add_alumni', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(alumniData)
+            });
+            const result = await response.json();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Tracer data updated successfully.',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            
+            // Remove validation styles after success
+            form.classList.remove('was-validated');
+            form.reset(); 
+            // Reset Dynamic section
+            document.getElementById("job-details-section").classList.add("d-none");
+            loadAlumni(); 
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Server connection failed', 'error');
+        }
+    }
+
+    async function loadAlumni() {
+        try {
+            const response = await fetch('/get_alumni');
+            const data = await response.json();
+            const tableBody = document.getElementById("alumniTableBody");
+            tableBody.innerHTML = ""; 
+
+            data.forEach(student => {
+                // Safety checks for missing data (optional chaining ?.)
+                const fullName = `${student.personal_info?.first_name || ''} ${student.personal_info?.last_name || ''}`;
+                const status = student.employment_data?.status || "N/A";
+                const year = student.personal_info?.year_grad || "N/A";
+                
+                // Determine what to show in the "Job" column
+                let jobDisplay = "N/A";
+                if (student.employment_data?.job_details) {
+                    const job = student.employment_data.job_details;
+                    jobDisplay = `<b>${job.title || ''}</b><br><small>${job.company || ''}</small>`;
+                } else {
+                    jobDisplay = `<span class="text-muted">${status}</span>`;
+                }
+
+                const row = `
+                    <tr>
+                        <td>${student.student_id}</td>
+                        <td>${fullName}</td>
+                        <td>
+                            <span class="badge ${status === 'Employed' ? 'bg-success' : 'bg-secondary'}">
+                                ${status}
+                            </span>
+                        </td>
+                        <td>${jobDisplay}</td>
+                        <td>${year}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+    }
+
+    // Load data on page start
+    window.onload = loadAlumni;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
