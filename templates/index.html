@@ -277,11 +277,13 @@
                         <label class="form-label fw-bold">Skills (Comma separated)</label>
                         <input type="text" id="skills" class="form-control" placeholder="Python, CAD, Networking">
                     </div>     
-            <button type="submit" class="btn btn-success w-100 fw-bold">Submit Profile</button>
+            <!--<button type="submit" class="btn btn-success w-100 fw-bold">Submit Profile</button>-->
+            <button type="button" onclick="submitData()" class="btn btn-success w-100 fw-bold">Submit</button>
         </form>
     </div>
 </div>
 
+<!-- OLD START OF THE SCRIPT
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // START EDIT/UPDATE PART
@@ -639,6 +641,333 @@
     // Load data on page start
     window.onload = loadAlumni;
 </script>
+END OF SCRIPT-->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // ==========================================
+        // 1. CHECK FOR EDIT MODE ON PAGE LOAD
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit_id');
+
+            if (editId) {
+                console.log("Edit Mode Detected for ID:", editId);
+                loadAlumniDataForEdit(editId);
+            }
+        });
+
+        // ==========================================
+        // 2. FUNCTION TO LOAD DATA AND FILL FORM
+        // ==========================================
+        function loadAlumniDataForEdit(id) {
+            fetch(`/get_one_alumni/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        Swal.fire('Error', 'Could not find student data', 'error');
+                        return;
+                    }
+
+                    // --- FILL BASIC INFO ---
+                    document.getElementById("student_id").value = data.student_id || "";
+                    document.getElementById("first_name").value = data.personal_info.first_name || "";
+                    document.getElementById("last_name").value = data.personal_info.last_name || "";
+                    document.getElementById("program").value = data.personal_info.program || "";
+                    document.getElementById("year_grad").value = data.personal_info.year_grad || "";
+                    document.getElementById("civilstatus").value = data.personal_info.civilstatus || "";
+
+                    // --- HELPER FOR "OTHER" DROPDOWNS ---
+                    const setDropdown = (selectId, inputId, value) => {
+                        const select = document.getElementById(selectId);
+                        const input = document.getElementById(inputId);
+                        
+                        // Check if value matches one of the dropdown options
+                        let isStandard = Array.from(select.options).some(opt => opt.value === value);
+
+                        if (isStandard) {
+                            select.value = value;
+                            input.classList.add('d-none');
+                            input.removeAttribute("required");
+                            input.value = "";
+                        } else {
+                            // If not standard, it must be "Other"
+                            select.value = "Others"; 
+                            // If "Others" isn't in your list, try "Other"
+                            if (select.value === "") select.value = "Other"; 
+
+                            input.value = value; 
+                            input.classList.remove('d-none');
+                            input.setAttribute("required", "true");
+                        }
+                    };
+
+                    // Apply helper to your specific IDs
+                    setDropdown("gender", "other", data.personal_info.gender);
+                    setDropdown("HEA", "otherH", data.personal_info.HEA);
+                    setDropdown("eligibility", "otherE", data.personal_info.eligibility);
+
+                    // --- CONTACT INFO ---
+                    document.getElementById("email").value = data.contact_info.email || "";
+                    document.getElementById("mobile").value = data.contact_info.mobile || "";
+                    document.getElementById("city").value = data.contact_info.city || "";
+
+                    // --- EMPLOYMENT DATA ---
+                    const empStatus = document.getElementById("emp_status");
+                    empStatus.value = data.employment_data.status;
+                    
+                    // Manually trigger the toggle function to show/hide job fields
+                    toggleJobFields(); 
+
+                    if (data.employment_data.job_details) {
+                        document.getElementById("job_title").value = data.employment_data.job_details.title || "";
+                        document.getElementById("company").value = data.employment_data.job_details.company || "";
+                        document.getElementById("income").value = data.employment_data.job_details.income_range || "";
+                        
+                        if (data.employment_data.job_details.related_to_course) {
+                            document.getElementById("related_course").checked = true;
+                        }
+
+                        // Handle Organization "Other" logic
+                        setDropdown("organization", "otherO", data.employment_data.job_details.organization_type);
+                    }
+
+                    // --- SKILLS ---
+                    if (Array.isArray(data.skills)) {
+                        document.getElementById("skills").value = data.skills.join(", ");
+                    }
+
+                    // --- PREPARE UI FOR UPDATE ---
+                    // Create a hidden input to store the ID
+                    let hiddenId = document.getElementById("edit_id_field");
+                    if (!hiddenId) {
+                        hiddenId = document.createElement("input");
+                        hiddenId.type = "hidden";
+                        hiddenId.id = "edit_id_field";
+                        document.querySelector("form").appendChild(hiddenId);
+                    }
+                    hiddenId.value = id;
+
+                    // Change Button Text
+                    const btn = document.querySelector("button[type='submit']");
+                    if (btn) {
+                        btn.innerText = "Update Data";
+                        btn.classList.remove("btn-primary");
+                        btn.classList.add("btn-success");
+                    }
+                })
+                .catch(err => console.error("Error loading data:", err));
+        }
+
+        // ==========================================
+        // 3. TOGGLE FUNCTIONS (Your Original Logic)
+        // ==========================================
+        function toggleJobFields() {
+            const status = document.getElementById("emp_status").value;
+            const jobSection = document.getElementById("job-details-section");
+            
+            const jobTitle = document.getElementById("job_title");
+            const company = document.getElementById("company");
+            const income = document.getElementById("income");
+
+            if (status === "Regular/ Permanent" || status === "Temporary" || status === "Casual/ Contractual" || status === "Contract of Service/ Job Order" || status === "Self-Employed") {
+                jobSection.classList.remove("d-none");
+                jobTitle.required = true;
+                company.required = true;
+                income.required = true;
+            } else {
+                jobSection.classList.add("d-none");
+                jobTitle.required = false;
+                company.required = false;
+                income.required = false;
+            }
+        }
+
+        function toggleOtherGender() {
+            const selectBox = document.getElementById("gender");
+            const otherInput = document.getElementById("other");
+
+            if (selectBox.value === "Other") {
+                otherInput.classList.remove("d-none");
+                otherInput.setAttribute("required", "true");
+                otherInput.focus();
+            } else {
+                otherInput.classList.add("d-none");
+                otherInput.removeAttribute("required");
+                otherInput.value = "";
+            }
+        }
+
+        function toggleOtherHEA() {
+            const selectBox = document.getElementById("HEA");
+            const otherHEA = document.getElementById("otherH");
+
+            if (selectBox.value === "Others") {
+                otherHEA.classList.remove("d-none");
+                otherHEA.setAttribute("required", "true");
+                otherHEA.focus();
+            } else {
+                otherHEA.classList.add("d-none");
+                otherHEA.removeAttribute("required");
+                otherHEA.value = "";
+            }
+        }
+
+        function toggleOrganization() {
+            const selectBox = document.getElementById("organization");
+            const otherO = document.getElementById("otherO");
+
+            if (selectBox.value === "Others") {
+                otherO.classList.remove("d-none");
+                otherO.setAttribute("required", "true");
+                otherO.focus();
+            } else {
+                otherO.classList.add("d-none");
+                otherO.removeAttribute("required");
+                otherO.value = "";
+            }
+        }
+
+        function toggleEligibility() {
+            const selectBox = document.getElementById("eligibility");
+            const otherE = document.getElementById("otherE");
+
+            if (selectBox.value === "Others") {
+                otherE.classList.remove("d-none");
+                otherE.setAttribute("required", "true");
+                otherE.focus();
+            } else {
+                otherE.classList.add("d-none");
+                otherE.removeAttribute("required");
+                otherE.value = "";
+            }
+        }
+
+        // ==========================================
+        // 4. FORM VALIDATION LISTENER
+        // ==========================================
+        const form = document.getElementById('alumniForm');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (form.checkValidity()) {
+                submitData(); // Run our main function
+            } else {
+                form.classList.add('was-validated');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Fields',
+                    text: 'Please fill out all required fields marked in red.',
+                });
+            }
+        }, false);
+
+        // ==========================================
+        // 5. MAIN SUBMIT FUNCTION (Add & Update)
+        // ==========================================
+        async function submitData() {
+            // Gather Basic Values
+            const student_id = document.getElementById("student_id").value.trim();
+            const first_name = document.getElementById("first_name").value.trim();
+            const last_name = document.getElementById("last_name").value.trim();
+            const program = document.getElementById("program").value;
+            const civilstatus = document.getElementById("civilstatus").value;
+            const email = document.getElementById("email").value.trim();
+            const mobile = document.getElementById("mobile").value.trim();
+            const city = document.getElementById("city").value.trim();
+            const year_grad = document.getElementById("year_grad").value.trim();
+            const emp_status = document.getElementById("emp_status").value;
+            
+            // --- HELPER: Get Final Value (Dropdown vs Textbox) ---
+            const getFinalValue = (dropId, inputId) => {
+                const drop = document.getElementById(dropId);
+                const inp = document.getElementById(inputId);
+                if (drop.value === "Others" || drop.value === "Other") {
+                    return inp.value.trim();
+                }
+                return drop.value;
+            };
+
+            const finalGender = getFinalValue("gender", "other");
+            const finalHEA = getFinalValue("HEA", "otherH");
+            const finaleligibility = getFinalValue("eligibility", "otherE");
+            const finalorganization = getFinalValue("organization", "otherO");
+
+            const skillsInput = document.getElementById("skills").value.trim();
+            const skillsFinal = skillsInput === "" ? [] : skillsInput.split(',').map(s => s.trim());
+
+            // --- CONSTRUCT JSON ---
+            const alumniData = {
+                "student_id": student_id,
+                "personal_info": { 
+                    "first_name": first_name, "last_name": last_name, "year_grad": year_grad, 
+                    "program": program, "gender": finalGender, "civilstatus": civilstatus, 
+                    "HEA": finalHEA, "eligibility": finaleligibility 
+                },
+                "contact_info": { "email": email, "mobile": mobile, "city": city },
+                "employment_data": {
+                    "status": emp_status,
+                    "job_details": (["Regular/ Permanent", "Temporary", "Casual/ Contractual", "Contract of Service/ Job Order", "Self-Employed"].includes(emp_status)) ? {
+                        "title": document.getElementById("job_title").value,
+                        "company": document.getElementById("company").value,
+                        "organization_type": finalorganization,
+                        "income_range": document.getElementById("income").value,
+                        "related_to_course": document.getElementById("related_course").checked
+                    } : null
+                },
+                "skills": skillsFinal
+            };
+
+            // --- DECIDE: ADD OR UPDATE? ---
+            const editIdField = document.getElementById("edit_id_field");
+            const isEdit = editIdField && editIdField.value !== "";
+
+            // Set URL and Method
+            let url = isEdit ? `/update_alumni/${editIdField.value}` : '/add_alumni';
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(alumniData)
+                });
+                const result = await response.json();
+
+                if (result.success || result.message.includes("success")) {
+                    let msg = isEdit ? 'Data updated successfully!' : 'Tracer data added successfully.';
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: msg,
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // If we are editing, go back to the list
+                        if (isEdit) {
+                            window.location.href = "/admin-dashboard"; // Redirect to dashboard
+                        } else {
+                            // If adding, just reset the form
+                            document.querySelector("form").reset();
+                            form.classList.remove('was-validated');
+                            document.getElementById("job-details-section").classList.add("d-none");
+                            
+                            // If you have a table on this page, reload it
+                            if(typeof loadAlumni === "function") { loadAlumni(); }
+                        }
+                    });
+                } else {
+                    Swal.fire('Error', 'Failed to save data', 'error');
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                Swal.fire('Error', 'Something went wrong', 'error');
+            }
+        }
+    </script>
+    </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
