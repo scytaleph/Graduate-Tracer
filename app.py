@@ -244,8 +244,10 @@ def generate_pdf_report():
         program = alumni.get('personal_info', {}).get('program', 'N/A')
         gender = alumni.get('personal_info', {}).get('gender', 'N/A')
         employment = alumni.get('employment_data', {}).get('status', 'N/A')
-        title = alumni.get('employment_data', {}).get('job_details', {}).get('title', 'N/A')
-        company = alumni.get('employment_data', {}).get('job_details', {}).get('company', 'N/A')
+        title = alumni.get('employment_data', {}).get('job_details', {}).get('title', 'N/A') if alumni.get('employment_data') and alumni.get('employment_data').get('job_details') else 'N/A'
+        company = alumni.get('employment_data', {}).get('job_details', {}).get('company', 'N/A') if alumni.get('employment_data') and alumni.get('employment_data').get('job_details') else 'N/A'
+        #title = alumni.get('employment_data', {}).get('job_details', {}).get('title', 'N/A')
+        #company = alumni.get('employment_data', {}).get('job_details', {}).get('company', 'N/A')
         
         row = [
             str(alumni.get('student_id', 'N/A')),
