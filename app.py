@@ -1,3 +1,4 @@
+import os
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
@@ -11,7 +12,8 @@ app = Flask(__name__)
 # SECURITY REQUIREMENT:
 # You MUST set a secret_key to use sessions. 
 # It encrypts the "badge" so hackers can't fake it.
-app.secret_key = 'super_secret_random_key_here'
+#app.secret_key = 'super_secret_random_key_here'
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 
 # This dictionary stores the login info. 
 # Without this, Python gives a "NameError".
