@@ -161,7 +161,7 @@
     function loadAlumni() {
         const tableBody = document.getElementById('alumniTableBody');
         const countSpan = document.getElementById('totalCount');
-        tableBody.innerHTML = "<tr><td colspan='7'>Loading data...</td></tr>"; // Show loading text
+        tableBody.innerHTML = "<tr><td colspan='10'>Loading data...</td></tr>"; // Show loading text
 
         // Fetch data from the python route '/get_alumni'
         fetch('/get_alumni')
@@ -187,8 +187,10 @@
                     const program = (alumni.personal_info && alumni.personal_info.program) ? alumni.personal_info.program : "N/A";
                     const gender = (alumni.personal_info && alumni.personal_info.gender) ? alumni.personal_info.gender : "N/A";
                     const employment = (alumni.employment_data && alumni.employment_data.status) ? alumni.employment_data.status : "N/A";
-                    const title = (alumni.employment_data && alumni.employment_data.job_details.title) ? alumni.employment_data.job_details.title : "N/A";
-                    const company = (alumni.employment_data && alumni.employment_data.job_details.company) ? alumni.employment_data.job_details.company : "N/A";
+                    //const title = (alumni.employment_data && alumni.employment_data.job_details.title) ? alumni.employment_data.job_details.title : "N/A";
+                    const company = (alumni.employment_data && alumni.employment_data.job_details && alumni.employment_data.job_details.company) ? alumni.employment_data.job_details.company : "N/A";
+                    const title = (alumni.employment_data && alumni.employment_data.job_details && alumni.employment_data.job_details.title) ? alumni.employment_data.job_details.title : "N/A";
+                    //const company = (alumni.employment_data && alumni.employment_data.job_details.company) ? alumni.employment_data.job_details.company : "N/A";
                     //const skills = student.skills ? student.skills.join(", ") : "None";
 
                     const row = `

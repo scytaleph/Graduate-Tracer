@@ -198,11 +198,14 @@ def generate_pdf_report():
     
     y = height - top_margin
     p.setFont("Helvetica-Bold", 16)
-    p.drawString(left_margin, y, "Graduate Tracer Alumni Report")
+    title = "BISCAST Graduate Tracer Alumni Report"
+    title_width = p.stringWidth(title, "Helvetica-Bold", 16)
+    centered_x = (width - title_width) / 2
+    p.drawString(centered_x, y, title)
     y -= 30
     
     p.setFont("Helvetica", 8)
-    headers = ["Student ID", "Name", "City", "Year Gradated", "Program", "Gender", "Employment","Title","Company"]
+    headers = ["Student ID", "Name", "City", "Year Graduated", "Program", "Gender", "Employment","Title","Company"]
     
     # Draw header row with border
     x = left_margin
