@@ -761,18 +761,37 @@ END OF SCRIPT-->
             const jobSection = document.getElementById("job-details-section");
             const jobTitle = document.getElementById("job_title");
             const company = document.getElementById("company");
+            const orgSelect = document.getElementById("organization");
+            const orgOther = document.getElementById("otherO"); 
             const income = document.getElementById("income");
 
-            if (["Regular/ Permanent", "Temporary", "Casual/ Contractual", "Contract of Service/ Job Order", "Self-Employed"].includes(status)) {
+            const employedStatuses = ["Regular/ Permanent", "Temporary", "Casual/ Contractual", "Contract of Service/ Job Order", "Self-Employed"];
+
+            if (employedStatuses.includes(status)) {
                 jobSection.classList.remove("d-none");
                 jobTitle.required = true;
                 company.required = true;
                 income.required = true;
+                if (orgSelect) orgSelect.required = true;
             } else {
                 jobSection.classList.add("d-none");
                 jobTitle.required = false;
                 company.required = false;
                 income.required = false;
+
+                jobTitle.value = "";
+                company.value = "";
+                income.value = "";
+
+                if(orgSelect) {
+                    orgSelect.required = false;
+                    orgSelect.value = ""; // Reset dropdown
+                }
+                if(orgOther) {
+                    orgOther.removeAttribute("required");
+                    orgOther.classList.add("d-none"); // Hide the "other" input
+                    orgOther.value = ""; // Clear the text
+                }
             }
         }
 

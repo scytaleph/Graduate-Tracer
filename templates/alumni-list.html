@@ -113,9 +113,19 @@
         </div>
     <div class="table-section">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>📋 <b>Graduate Tracer Data List</b>
-                    <!-- <span class="badge bg-primary fs-5 align-middle" id="totalCount">0</span> -->
-            </h2>
+            <h2>📋 <b>Graduate Tracer Data List</b></h2>
+                <div class="mb-2">
+                    <select id="sortDropdown" class="form-select" onchange="sortTable()">
+                        <option value="" disabled selected>-- Sort by --</option>
+                        <option value="name">Name</option>
+                        <option value="year_grad">Year Graduated</option>
+                        <option value="employment">Employment Status</option>
+                        <option value="program">Program</option>
+                        <option value="tittle">Title</option>
+                        <option value="company">Company</option>
+                    </select>
+                </div>
+        </div>
         <div class="d-flex align-items-center gap-3">
             <h4>
                 <b>Logged in as: </b> <label>
@@ -129,31 +139,31 @@
                 </a>
         </div>
         </div>
-            <table>
+            <table id="alumniTable">
                 <thead>
                     <tr>
-                        <th>Student ID</th>
-                        <th>Name</th>
-                        <th>City</th>
-                        <th>Year Graduated</th>
-                        <th>Program</th>
-                        <th>Gender</th>
-                        <th>Employment Status</th>
-                        <th>Title</th>
-                        <th>Company</th>
+                        <th class = "text-nowrap" onclick="sortTable(0)">Student ID</th>
+                        <th onclick="sortTable(1)">Name</th>
+                        <th onclick="sortTable(2)">City</th>
+                        <th  class = "text-nowrap" onclick="sortTable(3)">Year Graduated</th>
+                        <th onclick="sortTable(4)">Program</th>
+                        <th onclick="sortTable(5)">Gender</th>
+                        <th  class = "text-nowrap" onclick="sortTable(6)">Employment Status</th>
+                        <th onclick="sortTable(7)">Title</th>
+                        <th onclick="sortTable(8)">Company</th>
                         <th class="text-center" >Actions</th>
                     </tr>
                 </thead>
                 <tbody id="alumniTableBody">
                     </tbody>
             </table>
-    </div>
         <div class="mt-3 pt-3 border-top d-flex justify-content-start align-items-center">
             <h4 class="text-secondary mb-0">
                 Total Records: 
                 <span class="badge bg-primary fs-5 ms-1" id="totalCount">0</span>
             </h4>
         </div>
+    </div>
     </div>
 
     <script>
@@ -205,12 +215,15 @@
                         <td>${title || "N/A"}</td>
                         <td>${company || "N/A"}</td>
                         <td class="text-center text-nowrap">
-                            <button class="btn btn-sm btn-warning me-2" onclick="editAlumni('${alumni._id}')">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteAlumni('${alumni._id}')">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
+                            <div style="display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
+                                <button class="btn btn-warning w-100" onclick="editAlumni('${alumni._id}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-danger w-100" onclick="deleteAlumni('${alumni._id}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
                         </td>
                     </tr>
                     `;
@@ -294,6 +307,86 @@
             }
         });
     }
+    function sortTable() {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    var dir = "asc"; 
+    var switchcount = 0;
+    
+    // 1. Get the selected value from the dropdown
+    var dropdown = document.getElementById("sortDropdown");
+    var selectedValue = dropdown.value;
+    
+    // 2. Map the dropdown values to the specific Column Index in your table
+    // (Based on your previous table structure: ID=0, Name=1, City=2, Year=3, Program=4, etc.)
+    var columnIndex = -1;
+    
+    switch (selectedValue) {
+        case "name":
+            columnIndex = 1; 
+            break;
+        case "year_grad":
+            columnIndex = 3; 
+            break;
+        case "program":
+            columnIndex = 4;
+            break;
+        case "employment":
+            columnIndex = 6;
+            break;
+        case "tittle": // Matches your HTML value "tittle"
+            columnIndex = 7;
+            break;
+        case "company":
+            columnIndex = 8;
+            break;
+        default:
+            return; // Stop if no valid column is selected
+    }
+
+    table = document.getElementById("alumniTable"); 
+    switching = true;
+
+    // 3. The Sorting Loop
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+
+        // Loop through all table rows (except the first, which contains table headers)
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            
+            // Get the two elements to compare from the correct column
+            x = rows[i].getElementsByTagName("TD")[columnIndex];
+            y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+
+            // Check if they should switch place
+            if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        } else {
+            // Note: With a dropdown, this 'desc' toggle only works if the logic triggers twice.
+            // Since 'onchange' only triggers once per selection, this mostly ensures Ascending sort.
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
 </script>
 </body>
 </html>
