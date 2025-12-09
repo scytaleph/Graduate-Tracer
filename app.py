@@ -4,6 +4,8 @@ from bson.objectid import ObjectId
 import json
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from pymongo import MongoClient
+from flask import send_file
+from io import BytesIO
 
 
 
@@ -171,11 +173,109 @@ def get_alumni():
         alumni['_id'] = str(alumni['_id'])
     return jsonify(alumni_list)
 
-# --- ADD THIS NEW ROUTE BELOW ---
-#@app.route('/tracer-list')
-#def view_list():
-#    return render_template('alumni-list.html')
-# --------------------------------
+# --- PDF REPORT GENERATION ROUTE ---
+try:
+    from reportlab.lib.pagesizes import letter, landscape
+    from reportlab.pdfgen import canvas
+except ImportError:
+    pass  # If not installed, user must run: pip install reportlab
+
+@app.route('/generate_pdf_report', methods=['GET'])
+def generate_pdf_report():
+    alumni_cursor = alumni_collection.find()
+    alumni_list = list(alumni_cursor)
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=landscape(letter))
+    width, height = landscape(letter)
+    
+    # Adjustable margins and spacing
+    left_margin = 30
+    right_margin = 30
+    top_margin = 40
+    row_height = 18
+    col_width = 110
+    
+    y = height - top_margin
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(left_margin, y, "Graduate Tracer Alumni Report")
+    y -= 30
+    
+    p.setFont("Helvetica", 9)
+    headers = ["Student ID", "Name", "City", "Year Gradated", "Program", "Gender", "Employment"]
+    
+    # Draw header row with border
+    x = left_margin
+    for i, header in enumerate(headers):
+        p.rect(x, y - row_height, col_width, row_height)
+        p.drawString(x + 5, y - row_height + 4, header)
+        x += col_width
+    
+    y -= row_height
+    
+    def wrap_text(text, max_width, font_name, font_size):
+        """Wrap text to fit within max_width"""
+        p.setFont(font_name, font_size)
+        words = text.split()
+        lines = []
+        current_line = ""
+        for word in words:
+            test_line = current_line + word + " "
+            if p.stringWidth(test_line, font_name, font_size) < max_width - 10:
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word + " "
+        if current_line:
+            lines.append(current_line)
+        return lines
+    
+    # Draw data rows with borders
+    for alumni in alumni_list:
+        firstName = alumni.get('personal_info', {}).get('first_name', 'N/A')
+        lastName = alumni.get('personal_info', {}).get('last_name', 'N/A')
+        city = alumni.get('contact_info', {}).get('city', 'N/A')
+        year_grad = alumni.get('personal_info', {}).get('year_grad', 'N/A')
+        program = alumni.get('personal_info', {}).get('program', 'N/A')
+        gender = alumni.get('personal_info', {}).get('gender', 'N/A')
+        employment = alumni.get('employment_data', {}).get('status', 'N/A')
+        
+        row = [
+            str(alumni.get('student_id', 'N/A')),
+            f"{firstName} {lastName}",
+            city,
+            str(year_grad),
+            program,
+            gender,
+            employment
+        ]
+        
+        # Wrap text for each cell and find max lines needed
+        wrapped_cells = [wrap_text(cell, col_width, "Helvetica", 9) for cell in row]
+        max_lines = max(len(lines) for lines in wrapped_cells)
+        dynamic_row_height = row_height * max_lines
+        
+        # Draw each cell with border and wrapped text
+        x = left_margin
+        for cell_lines in wrapped_cells:
+            p.rect(x, y - dynamic_row_height, col_width, dynamic_row_height)
+            text_y = y - row_height + 4
+            for line in cell_lines:
+                p.drawString(x + 5, text_y, line)
+                text_y -= row_height
+            x += col_width
+        
+        y -= dynamic_row_height
+        
+        # New page if needed
+        if y < 50:
+            p.showPage()
+            y = height - top_margin
+    
+    p.save()
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name="alumni_report.pdf", mimetype='application/pdf')
 
 # --- 3. RUN THE SERVER ---
 if __name__ == '__main__':
