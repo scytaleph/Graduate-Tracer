@@ -139,6 +139,8 @@
                         <th>Program</th>
                         <th>Gender</th>
                         <th>Employment Status</th>
+                        <th>Title</th>
+                        <th>Company</th>
                         <th class="text-center" >Actions</th>
                     </tr>
                 </thead>
@@ -185,6 +187,8 @@
                     const program = (alumni.personal_info && alumni.personal_info.program) ? alumni.personal_info.program : "N/A";
                     const gender = (alumni.personal_info && alumni.personal_info.gender) ? alumni.personal_info.gender : "N/A";
                     const employment = (alumni.employment_data && alumni.employment_data.status) ? alumni.employment_data.status : "N/A";
+                    const title = (alumni.employment_data && alumni.employment_data.job_details.title) ? alumni.employment_data.job_details.title : "N/A";
+                    const company = (alumni.employment_data && alumni.employment_data.job_details.company) ? alumni.employment_data.job_details.company : "N/A";
                     //const skills = student.skills ? student.skills.join(", ") : "None";
 
                     const row = `
@@ -196,6 +200,8 @@
                         <td>${program}</td>
                         <td>${gender}</td>
                         <td>${employment || "N/A"}</td>
+                        <td>${title || "N/A"}</td>
+                        <td>${company || "N/A"}</td>
                         <td class="text-center text-nowrap">
                             <button class="btn btn-sm btn-warning me-2" onclick="editAlumni('${alumni._id}')">
                                 <i class="fas fa-edit"></i> Edit

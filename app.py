@@ -190,25 +190,26 @@ def generate_pdf_report():
     width, height = landscape(letter)
     
     # Adjustable margins and spacing
-    left_margin = 30
-    right_margin = 30
+    left_margin = 20
+    right_margin = 20
     top_margin = 40
-    row_height = 18
-    col_width = 110
+    row_height = 12
+    col_width = 95
     
     y = height - top_margin
     p.setFont("Helvetica-Bold", 16)
     p.drawString(left_margin, y, "Graduate Tracer Alumni Report")
     y -= 30
     
-    p.setFont("Helvetica", 9)
-    headers = ["Student ID", "Name", "City", "Year Gradated", "Program", "Gender", "Employment"]
+    p.setFont("Helvetica", 8)
+    headers = ["Student ID", "Name", "City", "Year Gradated", "Program", "Gender", "Employment","Title","Company"]
     
     # Draw header row with border
     x = left_margin
     for i, header in enumerate(headers):
         p.rect(x, y - row_height, col_width, row_height)
-        p.drawString(x + 5, y - row_height + 4, header)
+        p.setFont("Helvetica-Bold", 8)
+        p.drawString(x + 3, y - row_height + 3, header)
         x += col_width
     
     y -= row_height
@@ -216,20 +217,20 @@ def generate_pdf_report():
     def wrap_text(text, max_width, font_name, font_size):
         """Wrap text to fit within max_width"""
         p.setFont(font_name, font_size)
-        words = text.split()
+        words = str(text).split()
         lines = []
         current_line = ""
         for word in words:
             test_line = current_line + word + " "
-            if p.stringWidth(test_line, font_name, font_size) < max_width - 10:
+            if p.stringWidth(test_line, font_name, font_size) < max_width - 6:
                 current_line = test_line
             else:
                 if current_line:
-                    lines.append(current_line)
+                    lines.append(current_line.strip())
                 current_line = word + " "
         if current_line:
-            lines.append(current_line)
-        return lines
+            lines.append(current_line.strip())
+        return lines if lines else ["N/A"]
     
     # Draw data rows with borders
     for alumni in alumni_list:
@@ -240,38 +241,43 @@ def generate_pdf_report():
         program = alumni.get('personal_info', {}).get('program', 'N/A')
         gender = alumni.get('personal_info', {}).get('gender', 'N/A')
         employment = alumni.get('employment_data', {}).get('status', 'N/A')
+        title = alumni.get('employment_data', {}).get('job_details', {}).get('title', 'N/A')
+        company = alumni.get('employment_data', {}).get('job_details', {}).get('company', 'N/A')
         
         row = [
             str(alumni.get('student_id', 'N/A')),
             f"{firstName} {lastName}",
-            city,
+            str(city),
             str(year_grad),
-            program,
-            gender,
-            employment
+            str(program),
+            str(gender),
+            str(employment),
+            str(title),
+            str(company)
         ]
         
         # Wrap text for each cell and find max lines needed
-        wrapped_cells = [wrap_text(cell, col_width, "Helvetica", 9) for cell in row]
-        max_lines = max(len(lines) for lines in wrapped_cells)
-        dynamic_row_height = row_height * max_lines
+        wrapped_cells = [wrap_text(cell, col_width, "Helvetica", 8) for cell in row]
+        max_lines = max(len(lines) for lines in wrapped_cells) if wrapped_cells else 1
+        dynamic_row_height = max(row_height * max_lines, row_height)
+        
+        # Check if we need a new page
+        if y - dynamic_row_height < 50:
+            p.showPage()
+            y = height - top_margin
         
         # Draw each cell with border and wrapped text
         x = left_margin
         for cell_lines in wrapped_cells:
             p.rect(x, y - dynamic_row_height, col_width, dynamic_row_height)
-            text_y = y - row_height + 4
+            text_y = y - 10
             for line in cell_lines:
-                p.drawString(x + 5, text_y, line)
+                p.setFont("Helvetica", 8)
+                p.drawString(x + 3, text_y, line)
                 text_y -= row_height
             x += col_width
         
         y -= dynamic_row_height
-        
-        # New page if needed
-        if y < 50:
-            p.showPage()
-            y = height - top_margin
     
     p.save()
     buffer.seek(0)
