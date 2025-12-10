@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
@@ -11,27 +13,41 @@ from io import BytesIO
 
 app = Flask(__name__)
 
-# SECURITY REQUIREMENT:
-# You MUST set a secret_key to use sessions. 
-# It encrypts the "badge" so hackers can't fake it.
-#app.secret_key = 'super_secret_random_key_here'
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+load_dotenv()
+
+app.secret_key = os.getenv('SECRET_KEY')
+
+ADMIN_CREDENTIALS = {
+    'username': os.getenv('ADMIN_USERNAME'), 
+    'password': os.getenv('ADMIN_PASSWORD')
+}
+
+client = MongoClient(os.getenv('MONGODB_URI'))
+db = client[os.getenv('DB_NAME')]
+alumni_collection = db[os.getenv('COLLECTION_NAME')]
+
+
+###########################################################################################
+
+#app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 
 # This dictionary stores the login info. 
 # Without this, Python gives a "NameError".
-ADMIN_CREDENTIALS = {
-    'username': 'admin', 
-    'password': '123'
-}
+#ADMIN_CREDENTIALS = {
+#    'username': 'admin', 
+#    'password': '123'
+#}
 
 # --- 1. CONNECT TO DATABASE ---
-client = MongoClient("mongodb://localhost:27017/") 
+#client = MongoClient("mongodb://localhost:27017/") 
 
 # Create a database named 'biscast_db'
-db = client.biscast_db 
+#db = client.biscast_db 
 
 # Create a collection (table) named 'alumni'
-alumni_collection = db.alumni 
+#alumni_collection = db.alumni 
+
+###########################################################################################
 
 #@app.route('/') for Graduates
 @app.route('/graduate-tracer')
