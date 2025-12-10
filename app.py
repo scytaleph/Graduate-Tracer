@@ -96,11 +96,9 @@ def dashboard_page():
 # --- ROUTE: Logout ---
 @app.route('/logout')
 def logout():
-    # Destroy the session (Throw away the badge)
     session.pop('is_logged_in', None)
     session.clear()
     
-    # Send them back to the Login Page
     return redirect(url_for('login_page'))
 
 
@@ -108,7 +106,6 @@ def logout():
 def add_alumni():
     try:
         data = request.json
-        # The fix is here: use an underscore (_)
         alumni_collection.insert_one(data)
         
         return jsonify({"message": "Alumni added successfully!"})
@@ -119,21 +116,16 @@ def add_alumni():
 @app.route('/delete_alumni/<id>', methods=['DELETE'])
 def delete_alumni(id):
     try:
-        # 1. Convert the string ID from the URL into a MongoDB ObjectId
         record_id = ObjectId(id)
         
-        # 2. Attempt to delete the record from your collection
-        # Replace 'collection' with your actual variable name (e.g., db.alumni, alumni_collection)
         result = alumni_collection.delete_one({'_id': record_id})
         
-        # 3. Check if a document was actually deleted
         if result.deleted_count == 1:
             return jsonify({'success': True, 'message': 'Deleted successfully'}), 200
         else:
             return jsonify({'success': False, 'message': 'Record not found'}), 404
             
     except Exception as e:
-        # Handle errors (like invalid ID format)
         print(f"Error deleting: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -162,7 +154,6 @@ def update_alumni(id):
     try:
         data = request.json # Get the updated JSON from frontend
         
-        # We use $set to update the fields provided
         result = alumni_collection.update_one(
             {'_id': ObjectId(id)},
             {'$set': data}
@@ -184,7 +175,6 @@ def get_alumni():
     #convert BSON to JSON
     alumni_list = list(alumni_cursor)
 
-    # We need to convert the strange ObjectId to a normal string
     for alumni in alumni_list:
         alumni['_id'] = str(alumni['_id'])
     return jsonify(alumni_list)
