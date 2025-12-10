@@ -117,6 +117,7 @@
                 <div class="mb-2">
                     <select id="sortDropdown" class="form-select" onchange="sortTable()">
                         <option value="" disabled selected>-- Sort by --</option>
+                        <option value="student_id">Student ID</option>
                         <option value="name">Name</option>
                         <option value="year_grad">Year Graduated</option>
                         <option value="employment">Employment Status</option>
@@ -321,6 +322,9 @@
     var columnIndex = -1;
     
     switch (selectedValue) {
+        case "student_id":
+            columnIndex = 0; 
+            break;
         case "name":
             columnIndex = 1; 
             break;
